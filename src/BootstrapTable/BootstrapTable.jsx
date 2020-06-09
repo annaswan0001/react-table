@@ -2,8 +2,9 @@ import React from "react";
 import Select from '../Filters/Select'
 import {idFilterData} from '../Filters/FiltersData'
 import InputFilter from '../Filters/InputFilter'
+import RadioFilter from '../Filters/RadioFilter'
 
-export default function BootstrapTable({ data,setFilterId, idFilter, firsrNameFilter ,setFilterFirstName }) {
+export default function BootstrapTable({ data, setFilterId, idFilter, firsrNameFilter ,setFilterFirstName, setFilterCategories, categoriesFilter}) {
   return (
     <table className="table">
       <thead>
@@ -27,7 +28,9 @@ export default function BootstrapTable({ data,setFilterId, idFilter, firsrNameFi
           <th>Email</th>
           <th>Phone</th>
           <th>Category</th>
-          <th>Category</th>
+          <th>Category
+         <RadioFilter value={categoriesFilter} handleRadioChange = {setFilterCategories}/>
+          </th>
         </tr>
       </thead>
       <tbody>

@@ -2,12 +2,14 @@ import React, { useState, useEffect, useCallback, useMemo } from "react";
 import BootstrapTable from "./BootstrapTable";
 import Search from "../Search/Search";
 import useFetchHook from "../useFetchHook";
-import { idFilterData } from "../Filters/FiltersData";
+import data from '../data'
+
 
 export default function BootstrapTableContainer() {
   const [filterValue, setFilterValue] = useState("");
   const [idFilter, setIdFilter] = useState("all");
   const [firsrNameFilter, setFirstNameFilter] = useState("");
+  const [categoriesFilter, setCategoriesFilter] = useState("");
   const [data, loading, error, setError] = useFetchHook(
     `http://www.filltext.com/?rows=${20}&id={number|1000}&firstName={firstName}&lastName={lastName}&email={email}&category=[1,2]&phone={phone|(xxx)xxx-xx-xx}&address={addressObject}&description={lorem|32}`,
     []
@@ -20,15 +22,13 @@ export default function BootstrapTableContainer() {
   }, [data]);
 
   const filterChange = useCallback(
-    (value) => {
-      setFilterValue(value);
-    },
-    [setFilterValue]
+    (value) => {setFilterValue(value);
+    },[setFilterValue]
   );
 
   useEffect(() => {
     if (!filterValue) {
-      setDataTable(data);
+      setDataTable(data)
     } else {
       const newData = data.filter((obj) => {
         return Object.keys(obj).some((key) => {
@@ -48,49 +48,79 @@ export default function BootstrapTableContainer() {
   //idFilter
   const setFilterId = useCallback((value) => {
     setIdFilter(value);
-  }, setIdFilter);
+  }, [setIdFilter]);
+
+ //nameFilter
+ const setFilterFirstName = useCallback((value) => {
+  setFirstNameFilter(value);
+}, [setFirstNameFilter]);
+
+ //categoriesFilter
+ const setFilterCategories = useCallback((value) => {
+  setCategoriesFilter(value);
+}, [setCategoriesFilter]);
+
 
   useEffect(() => {
-    let newData;
+    let idData 
     switch (idFilter) {
       case "all":
-        newData = [...dataTable];
+        idData = [...data]
+        console.log(idData, "idData")
         break;
       case "0":
-        newData = dataTable.filter((obj) => {
+        idData = data.filter((obj) => {
           return obj.id >= 0 && obj.id < 300;
         });
+        console.log(idData, "idData")
         break;
       case "300":
-        newData = dataTable.filter((obj) => {
+        idData = data.filter((obj) => {
           return obj.id >= 300 && obj.id < 600;
         });
+        console.log(idData, "idData")
         break;
       case "600":
-        newData = dataTable.filter((obj) => {
+        idData = data.filter((obj) => {
           return obj.id >= 600 && obj.id <= 1000;
         });
+        console.log(idData, "idData")
         break;
       default:
         break;
     }
+    let nameData 
     if (!firsrNameFilter) {
-       newData = [...newData]
+      nameData = [...data]
     } else {
-       newData = newData.filter((obj) => {
+      nameData = data.filter((obj) => {
         return obj.firstName
           .toLowerCase()
           .includes(firsrNameFilter.toLowerCase());
       });
      
     }
-    setDataTable(newData);
-  }, [idFilter, setDataTable, firsrNameFilter]);
 
-  //nameFilter
-  const setFilterFirstName = useCallback((value) => {
-    setFirstNameFilter(value);
-  }, setFirstNameFilter);
+     let categoriesData
+     if (!categoriesFilter) {
+      categoriesData = [...data]
+    } else {
+      categoriesData = data.filter((obj) => {
+        return obj.category
+          .toString()
+          .includes(categoriesFilter);
+      });
+     
+    }
+
+    let newData = data
+    .filter(item => nameData.includes(item))
+    .filter(item =>idData.includes(item))
+    .filter(item =>categoriesData.includes(item))
+    setDataTable(newData);
+  }, [idFilter, setDataTable, firsrNameFilter, categoriesFilter]);
+
+ 
 
 
   const searchComponent = useMemo(() => {
@@ -104,10 +134,12 @@ export default function BootstrapTableContainer() {
         setFilterId={setFilterId}
         firsrNameFilter={firsrNameFilter}
         setFilterFirstName={setFilterFirstName}
+        categoriesFilter={categoriesFilter}
+        setFilterCategories = {setFilterCategories}
         data={dataTable}
       />
     );
-  }, [dataTable, idFilter, setFilterId, firsrNameFilter, setFilterFirstName]);
+  }, [dataTable, idFilter, setFilterId, firsrNameFilter, setFilterFirstName, setFilterCategories, categoriesFilter ]);
 
 
 
